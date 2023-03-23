@@ -11,8 +11,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      // Remove the debug banner
-      debugShowCheckedModeBanner: false,
       title: 'Calculadora de imc - atividade',
       home: HomeScreen(),
     );
@@ -46,21 +44,34 @@ class _HomeScreenState extends State<HomeScreen> {
     }
     setState(() {
       imc = weight / (height * height);
-      if (imc! < 18.5) {
-        mensagem = "Abaixo do peso";
-      } else if (imc! >= 18.5 && imc! <= 24.9) {
-        mensagem = 'Peso normal';
-      } else if (imc! >= 25 && imc! <= 29.9) {
-        mensagem = "Sobrepeso";
-      } else if (imc! >= 30 && imc! <= 34.9) {
-        mensagem = "Obesidade grau 1";
-      } else if (imc! >= 35 && imc! <= 39.9) {
-        mensagem = "Obesidade grau 2";
-      } else if (imc! > 40) {
-        mensagem = "Obesidade 3";
-      }
+      mensagem = _getResultMessage(imc!);
     });
-    Navigator.push(context, MaterialPageRoute(builder: (context) => Resultado(mensagem)));
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Resultado(
+          mensagemAtualizada: mensagem,
+        ),
+      ),
+    );
+  }
+
+
+  String _getResultMessage(double imc) {
+    if (imc < 18.5) {
+      return "Abaixo do peso";
+    } else if (imc >= 18.5 && imc <= 24.9) {
+      return 'Peso normal';
+    } else if (imc >= 25 && imc <= 29.9) {
+      return "Sobrepeso";
+    } else if (imc >= 30 && imc <= 34.9) {
+      return "Obesidade grau 1";
+    } else if (imc >= 35 && imc <= 39.9) {
+      return "Obesidade grau 2";
+    } else {
+      return "Obesidade grau 3";
+    }
   }
 
   @override
@@ -78,13 +89,13 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(mainAxisSize: MainAxisSize.min, children: [
                 TextField(
                   keyboardType:
-                      const TextInputType.numberWithOptions(decimal: true),
+                  const TextInputType.numberWithOptions(decimal: true),
                   decoration: const InputDecoration(labelText: 'Altura (m)'),
                   controller: _heightController,
                 ),
                 TextField(
                   keyboardType:
-                      const TextInputType.numberWithOptions(decimal: true),
+                  const TextInputType.numberWithOptions(decimal: true),
                   decoration: const InputDecoration(
                     labelText: 'Peso (kg)',
                   ),
