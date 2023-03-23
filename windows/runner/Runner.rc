@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "calculadora_imc" "\0"
+            VALUE "FileDescription", "imc_calculator" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "calculadora_imc" "\0"
+            VALUE "InternalName", "imc_calculator" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2023 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "calculadora_imc.exe" "\0"
-            VALUE "ProductName", "calculadora_imc" "\0"
+            VALUE "OriginalFilename", "imc_calculator.exe" "\0"
+            VALUE "ProductName", "imc_calculator" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

@@ -1,128 +1,104 @@
 import 'package:flutter/material.dart';
+import 'package:imc_calculator/resultado.dart';
 
 void main() {
-  runApp(const MaterialApp(
-    home: Home(),
-  ));
+  runApp(const MyApp());
 }
 
-class Home extends StatefulWidget {
-  const Home({Key? key}) : super(key: key);
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
 
   @override
-  State<Home> createState() => _HomeState();
-}
-
-class _HomeState extends State<Home> {
-  String infoText = "...";
-  TextEditingController weightController = TextEditingController();
-  TextEditingController heightController = TextEditingController();
-
-  Widget buildTextField(String label, TextEditingController c) {
-    return TextField(
-      decoration: InputDecoration(
-          fillColor: Colors.white,
-          filled: true,
-          labelText: label,
-          labelStyle: const TextStyle(color: Colors.black, fontSize: 30.0),
-          border: const OutlineInputBorder()),
-      style: const TextStyle(color: Colors.black, fontSize: 25.0),
-      keyboardType: TextInputType.number,
-      controller: c,
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      // Remove the debug banner
+      debugShowCheckedModeBanner: false,
+      title: 'Calculadora de imc - atividade',
+      home: HomeScreen(),
     );
   }
+}
 
-  void _resetFields() {
-    setState(() {
-      weightController.text = "";
-      heightController.text = "";
-      infoText;
-    });
-  }
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({Key? key}) : super(key: key);
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final _heightController = TextEditingController();
+  final _weightController = TextEditingController();
+
+  double? imc;
+
+  String mensagem = 'Digite o que se pede para obter um resultado';
 
   void _calculate() {
-    double weight = double.parse(weightController.text);
-    double height = double.parse(heightController.text);
-    double imc = weight / (height * height);
+    final double? height = double.tryParse(_heightController.value.text);
+    final double? weight = double.tryParse(_weightController.value.text);
+
+    if (height == null || height <= 0 || weight == null || weight <= 0) {
+      setState(() {
+        mensagem = "Digite números positivos!";
+      });
+      return;
+    }
     setState(() {
-      if (imc < 18.5) {
-        infoText = "Abaixo do peso (${imc.toStringAsPrecision(4)})";
-      } else if (imc >= 18.5 && imc <= 24.9) {
-        infoText = "Peso normal (${imc.toStringAsPrecision(4)})";
-      } else if (imc >= 25 && imc <= 29.9) {
-        infoText = "Sobrepeso(${imc.toStringAsPrecision(4)})";
-      } else if (imc >= 30 && imc <= 34.9) {
-        infoText = "Obesidade grau 1 (${imc.toStringAsPrecision(4)})";
-      } else if (imc >= 35 && imc <= 39.9) {
-        infoText = "Obesidade grau 2 (${imc.toStringAsPrecision(4)})";
-      } else if (imc > 40) {
-        infoText = "Obesidade 3 (${imc.toStringAsPrecision(4)})";
+      imc = weight / (height * height);
+      if (imc! < 18.5) {
+        mensagem = "Abaixo do peso";
+      } else if (imc! >= 18.5 && imc! <= 24.9) {
+        mensagem = 'Peso normal';
+      } else if (imc! >= 25 && imc! <= 29.9) {
+        mensagem = "Sobrepeso";
+      } else if (imc! >= 30 && imc! <= 34.9) {
+        mensagem = "Obesidade grau 1";
+      } else if (imc! >= 35 && imc! <= 39.9) {
+        mensagem = "Obesidade grau 2";
+      } else if (imc! > 40) {
+        mensagem = "Obesidade 3";
       }
     });
+    Navigator.push(context, MaterialPageRoute(builder: (context) => Resultado(mensagem)));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-            backgroundColor: Colors.deepPurple,
-            title: const Text("Calculadora IMC"),
-            centerTitle: true,
-            actions: <Widget>[Container()]),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(50.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Container(
-                decoration: const BoxDecoration(boxShadow: [
-                  BoxShadow(
-                      color: Colors.deepPurpleAccent,
-                      blurRadius: 1000,
-                      spreadRadius: 250,
-                      offset: Offset(8, 8))
-                ]),
-                child: const Icon(
-                  Icons.accessibility_sharp,
-                  size: 200.0,
-                  color: Colors.white,
+      backgroundColor: Colors.deepOrange,
+      body: Center(
+        child: SizedBox(
+          width: 320,
+          child: Card(
+            color: Colors.white,
+            elevation: 10,
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(mainAxisSize: MainAxisSize.min, children: [
+                TextField(
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
+                  decoration: const InputDecoration(labelText: 'Altura (m)'),
+                  controller: _heightController,
                 ),
-              ),
-              buildTextField('Peso (em kg) ', weightController),
-              const Divider(),
-              buildTextField('Altura (em metros)', heightController),
-              const SizedBox(
-                height: 15,
-              ),
-              SizedBox(
-                width: 100,
-                height: 50,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.deepPurple,
-                    textStyle: const TextStyle(
-                        fontSize: 20, fontWeight: FontWeight.bold),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 10),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
+                TextField(
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
+                  decoration: const InputDecoration(
+                    labelText: 'Peso (kg)',
                   ),
-                  onPressed: () {
-                    _calculate();
-                  }, child: Text("Calcular"),
+                  controller: _weightController,
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 45.0),
-                child: Text(
-                  infoText,
-                  style: const TextStyle(color: Colors.black, fontSize: 30.0),
-                  textAlign: TextAlign.center,
+                ElevatedButton(
+                  onPressed: _calculate,
+                  child: const Text('Calcular'),
                 ),
-              )
-            ],
+              ]),
+            ),
           ),
-        ));
+        ),
+      ),
+    );
   }
 }
